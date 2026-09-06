@@ -27,9 +27,7 @@ import {
   Stars
 } from '@react-three/drei';
 
-const API =
-  import.meta.env.VITE_API_URL ||
-  'http://localhost:5000/api';
+const API = 'https://skillairo-careers.vercel.app/api';
 
 /* =========================
    LOGO

@@ -19,6 +19,18 @@ app.use(
 
 app.use(express.json());
 
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+
+  await mongoose.connect(process.env.MONGO_URI);
+
+  isConnected = true;
+
+  console.log('MongoDB connected');
+}
+
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
@@ -26,22 +38,13 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/jobs', jobRoutes);
-app.use('/api/applications', applicationRoutes);
-
-let isConnected = false;
-
-async function connectDB() {
-  if (isConnected) return;
-
-  await mongoose.connect(process.env.MONGO_URI);
-  isConnected = true;
-
-  console.log('MongoDB connected');
-}
-
+// MongoDB connection FIRST
 app.use(async (req, res, next) => {
+  // Health check doesn't need database
+  if (req.path === '/api/health') {
+    return next();
+  }
+
   try {
     await connectDB();
     next();
@@ -54,6 +57,11 @@ app.use(async (req, res, next) => {
     });
   }
 });
+
+// Routes AFTER database connection
+app.use('/api/auth', authRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/applications', applicationRoutes);
 
 export default app;
 export { connectDB };
