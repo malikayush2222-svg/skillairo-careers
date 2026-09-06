@@ -55,4 +55,5 @@ app.use(async (req, res, next) => {
   }
 });
 
-export { app, connectDB };
+export default app;
+export { connectDB };
