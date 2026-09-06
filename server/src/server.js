@@ -41,4 +41,18 @@ async function connectDB() {
   console.log('MongoDB connected');
 }
 
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+
+    res.status(500).json({
+      ok: false,
+      message: 'Database connection failed'
+    });
+  }
+});
+
 export { app, connectDB };
