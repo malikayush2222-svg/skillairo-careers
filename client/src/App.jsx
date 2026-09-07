@@ -27,128 +27,95 @@ import {
   Stars
 } from '@react-three/drei';
 
-const API = 'https://skillairo-careers.vercel.app/api';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /* =========================
    LOGO
 ========================= */
 
-function Logo() {
-  return (
-    <img
-      src="/skillairo-logo.png.png"
-      alt="SkillAiro"
-      className="h-12 w-12 object-contain"
-    />
-  );
-}
-/* =========================
-   NAVBAR
-========================= */
-function Nav() {
-  const [token, setToken] = useState(
-    sessionStorage.getItem('token')
-  );
+http://localhost:5173
+return (
+  <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#080611]/75 backdrop-blur-xl">
+    <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
 
-  const [role, setRole] = useState(
-    sessionStorage.getItem('role')
-  );
+      <Link
+        to="/"
+        className="flex items-center gap-3"
+      >
+        <Logo />
 
-  useEffect(() => {
-    const syncAuth = () => {
-      setToken(sessionStorage.getItem('token'));
-      setRole(sessionStorage.getItem('role'));
-    };
+        <div>
+          <div className="font-black tracking-wide">
+            SKILL<span className="gold">AIRO</span>
+          </div>
 
-    window.addEventListener('auth-changed', syncAuth);
+          <div className="text-[10px] uppercase tracking-[.3em] text-white/45">
+            Careers
+          </div>
+        </div>
+      </Link>
 
-    return () => {
-      window.removeEventListener('auth-changed', syncAuth);
-    };
-  }, []);
-
-  return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#080611]/75 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
+      <div className="hidden items-center gap-6 md:flex">
 
         <Link
-          to="/"
-          className="flex items-center gap-3"
+          to="/jobs"
+          className="text-white/70 hover:text-white"
         >
-          <Logo />
-
-          <div>
-            <div className="font-black tracking-wide">
-              SKILL<span className="gold">AIRO</span>
-            </div>
-
-            <div className="text-[10px] uppercase tracking-[.3em] text-white/45">
-              Careers
-            </div>
-          </div>
+          Jobs
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
-
+        {token && role === 'admin' && (
           <Link
-            to="/jobs"
+            to="/admin/dashboard"
             className="text-white/70 hover:text-white"
           >
-            Jobs
+            Admin Dashboard
           </Link>
+        )}
 
-          {token && role === 'admin' && (
-            <Link
-              to="/admin/dashboard"
-              className="text-white/70 hover:text-white"
-            >
-              Admin Dashboard
-            </Link>
-          )}
+        {token && role === 'user' && (
+          <Link
+            to="/dashboard"
+            className="text-white/70 hover:text-white"
+          >
+            Dashboard
+          </Link>
+        )}
 
-          {token && role === 'user' && (
-            <Link
-              to="/dashboard"
-              className="text-white/70 hover:text-white"
-            >
-              Dashboard
-            </Link>
-          )}
+        {token ? (
+          <button
+            className="btn btn-gold"
+            onClick={() => {
+              sessionStorage.removeItem('token');
+              sessionStorage.removeItem('role');
 
-          {token ? (
-            <button
-              className="btn btn-gold"
-              onClick={() => {
-                sessionStorage.removeItem('token');
-                sessionStorage.removeItem('role');
+              setToken(null);
+              setRole(null);
 
-                setToken(null);
-                setRole(null);
+              window.dispatchEvent(
+                new Event('auth-changed')
+              );
 
-                window.dispatchEvent(
-                  new Event('auth-changed')
-                );
+              location.href = '/';
+            }}
+          >
+            Logout
+          </button>
+        ) : (
+          <Link
+            to="/login"
+            className="btn btn-primary"
+          >
+            <LogIn size={16} />
+            Login
+          </Link>
+        )}
 
-                location.href = '/';
-              }}
-            >
-              Logout
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="btn btn-primary"
-            >
-              <LogIn size={16} />
-              Login
-            </Link>
-          )}
-
-        </div>
       </div>
-    </nav>
-  );
-}
+    </div>
+  </nav>
+);
+
 
 function AdminRoute({ children }) {
   const token = sessionStorage.getItem('token');
