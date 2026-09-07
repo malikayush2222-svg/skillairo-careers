@@ -28,94 +28,95 @@ import {
 } from '@react-three/drei';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 /* =========================
    LOGO
 ========================= */
+function Logo() {
+  return (
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 font-black text-black shadow-lg">
+      SA
+    </div>
+  );
+}
 
-http://localhost:5173
-return (
-  <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#080611]/75 backdrop-blur-xl">
-    <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
+function Nav({ token, role, setToken, setRole }) {
+  return (
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#080611]/75 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
 
-      <Link
-        to="/"
-        className="flex items-center gap-3"
-      >
-        <Logo />
+        <Link to="/" className="flex items-center gap-3">
+          <Logo />
 
-        <div>
-          <div className="font-black tracking-wide">
-            SKILL<span className="gold">AIRO</span>
+          <div>
+            <div className="font-black tracking-wide">
+              SKILL<span className="gold">AIRO</span>
+            </div>
+
+            <div className="text-[10px] uppercase tracking-[.3em] text-white/45">
+              Careers
+            </div>
           </div>
-
-          <div className="text-[10px] uppercase tracking-[.3em] text-white/45">
-            Careers
-          </div>
-        </div>
-      </Link>
-
-      <div className="hidden items-center gap-6 md:flex">
-
-        <Link
-          to="/jobs"
-          className="text-white/70 hover:text-white"
-        >
-          Jobs
         </Link>
 
-        {token && role === 'admin' && (
+        <div className="hidden items-center gap-6 md:flex">
+
           <Link
-            to="/admin/dashboard"
+            to="/jobs"
             className="text-white/70 hover:text-white"
           >
-            Admin Dashboard
+            Jobs
           </Link>
-        )}
 
-        {token && role === 'user' && (
-          <Link
-            to="/dashboard"
-            className="text-white/70 hover:text-white"
-          >
-            Dashboard
-          </Link>
-        )}
+          {token && role === 'admin' && (
+            <Link
+              to="/admin/dashboard"
+              className="text-white/70 hover:text-white"
+            >
+              Admin Dashboard
+            </Link>
+          )}
 
-        {token ? (
-          <button
-            className="btn btn-gold"
-            onClick={() => {
-              sessionStorage.removeItem('token');
-              sessionStorage.removeItem('role');
+          {token && role === 'user' && (
+            <Link
+              to="/dashboard"
+              className="text-white/70 hover:text-white"
+            >
+              Dashboard
+            </Link>
+          )}
 
-              setToken(null);
-              setRole(null);
+          {token ? (
+            <button
+              className="btn btn-gold"
+              onClick={() => {
+                sessionStorage.removeItem('token');
+                sessionStorage.removeItem('role');
 
-              window.dispatchEvent(
-                new Event('auth-changed')
-              );
+                setToken(null);
+                setRole(null);
 
-              location.href = '/';
-            }}
-          >
-            Logout
-          </button>
-        ) : (
-          <Link
-            to="/login"
-            className="btn btn-primary"
-          >
-            <LogIn size={16} />
-            Login
-          </Link>
-        )}
+                window.dispatchEvent(new Event('auth-changed'));
 
+                location.href = '/';
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="btn btn-primary"
+            >
+              <LogIn size={16} />
+              Login
+            </Link>
+          )}
+
+        </div>
       </div>
-    </div>
-  </nav>
-);
-
+    </nav>
+  );
+}
 
 function AdminRoute({ children }) {
   const token = sessionStorage.getItem('token');
@@ -3686,15 +3687,28 @@ function AdminJobs() {
 }
 
 
+
 /* =========================
    APP
 ========================= */
 
 function App() {
+  const [token, setToken] = useState(
+    sessionStorage.getItem('token')
+  );
+
+  const [role, setRole] = useState(
+    sessionStorage.getItem('role')
+  );
 
   return (
     <>
-      <Nav />
+      <Nav
+        token={token}
+        role={role}
+        setToken={setToken}
+        setRole={setRole}
+      />
 
       <Routes>
 
